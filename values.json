@@ -1,0 +1,12 @@
+{
+    "texts": {
+        "you_were_banned": "You were banned",
+        "to_main": "main screen",
+        "help_h": "help info"
+    },
+    "keyboards": {
+        "to_main": [
+            ["show help"]
+        ]
+    }
+}
