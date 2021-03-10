@@ -23,7 +23,7 @@ from relations import (
     callback_handlers
 )
 
-from handlers import new_chat_added
+from handlers import new_chat_added, tnx_notifyer
 
 
 def main():
@@ -32,6 +32,8 @@ def main():
         defaults=Defaults(parse_mode=ParseMode.HTML),
         use_context=True
     )
+
+    updater.job_queue.run_once(tnx_notifyer, 0)
 
     updater.dispatcher.add_handler(
         # if bot was added to the new chat
@@ -72,13 +74,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-def new_member(bot, update):
-    for member in update.message.new_chat_members:
-        if member.username == 'YourBot':
-            update.message.reply_text('Welcome')
-
-
-updater.start_polling()
-updater.idle()

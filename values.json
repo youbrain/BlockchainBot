@@ -7,7 +7,8 @@
         "wallets_h": "All wallets:",
         "addwallet_address": "Send address:",
         "addwallet_name": "Send new wallet name, or skip",
-        "getwallet": "<b>Name:</b> {}\n<b>Address:</b> {}\n\n<b>Transactions:</b>\n<code>{}</code>"
+        "getwallet": "<b>Name:</b> {}\n<b>Address:</b> {}\n\n<b>Transactions:</b>\n<code>{}</code>",
+        "new_chat_added": "Hello, this bot will send notifications of all transactions on <b>{}'s</b> wallets"
     },
     "keyboards": {
         "back": "Back",

@@ -153,16 +153,6 @@ addwallet_ch = ext.ConversationHandler(
 )
 
 
-# balances
-def update_balance(wlt):
-    tokens = ethscanio.get_balance(wlt.address)
-
-    for tokn in tokens:
-        Token(wallet_id=wlt.id, name=tokn[0], amount=tokn[1]).save()
-        # wlt.total_ammount += tokn[1]
-        yield tokn
-
-
 @new_response
 def balances_h(update, context, data, user, text, btns):
     wallets = Wallet.select().where(Wallet.owner_id == user.chat_id)
@@ -207,7 +197,7 @@ def balances_h(update, context, data, user, text, btns):
             if usdt_token.amount != now_balance_usdt:
                 usdt_token.amount = now_balance_usdt
                 usdt_token.save()
-        
+
         text += f"<code>{usdc_token.amount}$ USDC</code>\n"
         text += f"<code>{usdt_token.amount}$ USDT</code>\n\n"
 
