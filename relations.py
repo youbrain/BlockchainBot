@@ -1,7 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from handlers import *
+from base import keybs
+from handlers import (
+	start,
+	help_h,
+	to_main,
+	to_do_h,
+)
+from wallets import (
+	wallets_h,
+	getwallet,
+	addwallet_ch,
+	delwallet,
+	balances_h,
+)
 
+
+#
 command_handlers = {
     # 'command': handler_func,
     'start': start,
@@ -10,13 +25,23 @@ command_handlers = {
 
 conversation_handlers = [
     # test_ch
+    addwallet_ch
 ]
 
 button_handlers = {
     # 'btn_name': handler_func,
-    'show help': help_h
+    # 'show help': help_h,
+    keybs['to_main'][0][0]: wallets_h,
+    keybs['to_main'][0][1]: balances_h,
+    keybs['to_main'][1][0]: to_do_h,
+    keybs['to_main'][1][1]: to_do_h,
+
+    keybs['back']: to_main
 }
 
 callback_handlers = {
-    # 'callback': handler_func,
+    # 'pattern': handler_func,
+    'getwallet_': getwallet,
+    'delwallet_': delwallet,
+    'backtomain': to_main
 }

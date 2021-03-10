@@ -6,6 +6,8 @@ from os import environ as evars
 from os.path import (abspath, basename, dirname)
 import requests
 import traceback
+import etherscan
+from telegram import ReplyKeyboardRemove
 
 from database import User
 
@@ -59,3 +61,17 @@ def error_handler(bot, error):
 
         with open(filename, 'rb') as file:
             requests.post(url, files={'document': file})
+
+
+def del_msg(update, context):
+    context.bot.delete_message(
+        chat_id=update._effective_chat.id,
+        message_id=context.user_data['to_del']
+    )
+
+
+def remove_keyboard(update, context):
+    m_id = context.bot.send_message(
+        update._effective_chat.id, '1', reply_markup=ReplyKeyboardRemove()).message_id
+    context.bot.delete_message(
+        chat_id=update._effective_chat.id, message_id=m_id)

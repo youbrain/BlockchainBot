@@ -26,16 +26,27 @@ def start(update, context):
 
 
 @new_response
-def to_main(update, context, data, user, text, keyb):
+def to_main(update, context, data, user, text, btns):
+    if update.callback_query:
+        update.callback_query.message.delete()
     context.bot.send_message(
         update._effective_chat.id,
         text,
-        reply_markup=ReplyKeyboardMarkup(keyb)
+        reply_markup=ReplyKeyboardMarkup(btns, resize_keyboard=True)
     )
 
 
 @new_response
-def help_h(update, context, data, user, text, keyb):
+def help_h(update, context, data, user, text, btns):
+    context.bot.send_message(
+        update._effective_chat.id,
+        text
+    )
+
+
+
+@new_response
+def to_do_h(update, context, data, user, text, btns):
     context.bot.send_message(
         update._effective_chat.id,
         text

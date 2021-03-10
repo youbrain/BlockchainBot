@@ -38,4 +38,58 @@ class User(peewee.Model):
         db_table = 'users'
 
 
+class Wallet(peewee.Model):
+    id = peewee.AutoField()
+    owner_id = peewee.IntegerField()
+
+    address = peewee.CharField()
+    balance = peewee.FloatField(null=True)
+    name = peewee.CharField(null=True)
+
+    class Meta:
+        database = db
+        db_table = 'wallets'
+
+
+class Token(peewee.Model):
+    id = peewee.AutoField()
+    wallet_id = peewee.IntegerField()
+
+    name = peewee.CharField()
+    amount = peewee.FloatField(default=0.0)
+
+    is_hide = peewee.BooleanField(default=False)
+
+    class Meta:
+        database = db
+        db_table = 'tokens'
+
+
+class Transaction(peewee.Model):
+    id = peewee.AutoField()
+    wallet_id = peewee.IntegerField()
+
+    hash = peewee.CharField()
+    amount = peewee.FloatField()
+
+    class Meta:
+        database = db
+        db_table = 'transactions'
+
+
+class Destination(peewee.Model):
+    id = peewee.AutoField()
+
+    user_id = peewee.CharField()
+    chat_ids = peewee.TextField(null=True)
+
+    class Meta:
+        database = db
+        db_table = 'destinations'
+
+
+Destination.create_table()
 User.create_table()
+Wallet.create_table()
+Token.create_table()
+Transaction.create_table()

@@ -2,11 +2,22 @@
     "texts": {
         "you_were_banned": "You were banned",
         "to_main": "main screen",
-        "help_h": "help info"
+        "help_h": "help info",
+        "to_do_h": "😉 Soon...",
+        "wallets_h": "All wallets:",
+        "addwallet_address": "Send address:",
+        "addwallet_name": "Send new wallet name, or skip",
+        "getwallet": "<b>Name:</b> {}\n<b>Address:</b> {}\n\n<b>Transactions:</b>\n<code>{}</code>"
     },
     "keyboards": {
+        "back": "Back",
+        "wallets_h": "add wallet",
+        "addwallet_name": [
+            ["Skip", "Back"]
+        ],
         "to_main": [
-            ["show help"]
+            ["Wallets", "Balances"],
+            ["Transaction", "Info"]
         ]
     }
 }

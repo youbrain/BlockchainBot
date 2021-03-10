@@ -23,12 +23,22 @@ from relations import (
     callback_handlers
 )
 
+from handlers import new_chat_added
+
 
 def main():
     updater = Updater(
         evars['bot_token'],
         defaults=Defaults(parse_mode=ParseMode.HTML),
         use_context=True
+    )
+
+    updater.dispatcher.add_handler(
+        # if bot was added to the new chat
+        MessageHandler(
+            Filters.status_update.new_chat_members,
+            new_chat_added
+        )
     )
 
     # Adding all handlers from relations.py
@@ -62,3 +72,13 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+def new_member(bot, update):
+    for member in update.message.new_chat_members:
+        if member.username == 'YourBot':
+            update.message.reply_text('Welcome')
+
+
+updater.start_polling()
+updater.idle()
