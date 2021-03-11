@@ -4,7 +4,7 @@ from telegram import ReplyKeyboardMarkup
 from time import sleep
 
 import ethscanio
-from database import User, Destination, Wallet, Transaction
+from database import User, Destination, Wallet, Transaction, Token
 from base import new_response, txts  # , keybs
 
 
@@ -78,10 +78,23 @@ def new_chat_added(update, context):
     )
 
 
-def notify(context, dest, txn, wlt):
-    in_out = 'IN' if txn.to == wlt.address else 'OUT'
+def update_balance(address, token, is_eth=False, is_usdt=False):
+    if is_eth:
+        now_balance = ethscanio.get_eth_balance(
+            address,
+            token=token.name
+        )
+    else:
+        now_balance = ethscanio.get_trc_balance(address)
+
+    token.amount = now_balance
+    token.save()
+
+
+def notify(context, dest, txn, wlt, token='ETH'):
+    in_out = '+' if txn.to == wlt.address else '-'
     wlt_name = wlt.name if wlt.name else wlt.address
-    txt = f"{wlt_name}\n<b>{in_out}</b> {txn.amount} {txn.token}"
+    txt = f"<b>{wlt_name}</b>\n{in_out} {txn.amount} {txn.token}"
 
     chat_ids = list(set(dest.chat_ids.split(',')))
 
@@ -91,13 +104,14 @@ def notify(context, dest, txn, wlt):
                 chat_id,
                 txt
             )
-            sleep(1)
-        except:
-            print('notify error waiting 60sec...')
+            sleep(5)
+        except Exception as e:
+            print(e, 'error waiting 60sec...')
             sleep(60)
 
 
 def tnx_notifyer(context):
+    return
     while True:
         for dest in Destination.select():
             wlts = Wallet.select().where(Wallet.owner_id == dest.user_id)
@@ -125,11 +139,16 @@ def tnx_notifyer(context):
                             to=last_txn['to'],
                             amount=amount,
                             token=last_txn['tokenSymbol'],
-                            # direction='IN' if last_txn['to'] == wlt.address else 'OUT'
                         )
                         txn.save()
-                        notify(context, dest.user_id, txn, wlt)
-                        # send
+
+                        token = Token.get(
+                            (Token.wallet_id == wlt.id) & (
+                                Token.name == txn.token)
+                        )
+                        update_balance(wlt.address, token, is_eth=True)
+
+                        notify(context, dest, txn, wlt)
                 else:
                     last_txn = ethscanio.get_last_txn_trc(wlt.address)
                     if prob_last_hash != last_txn['transaction_id']:
@@ -144,9 +163,15 @@ def tnx_notifyer(context):
                             to=last_txn['to'],
                             amount=amount,
                             token=last_txn['token_info']['symbol'],
-                            # direction='IN' if last_txn['to'] == wlt.address else 'OUT'
                         )
                         txn.save()
+
+                        token = Token.get(
+                            (Token.wallet_id == wlt.id) & (
+                                Token.name == txn.token)
+                        )
+                        update_balance(wlt.address, token, is_eth=False)
+
                         notify(context, dest, txn, wlt)
-            sleep(5)
+            sleep(20)
         sleep(5)

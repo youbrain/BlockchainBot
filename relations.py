@@ -2,19 +2,20 @@
 # -*- coding: utf-8 -*-
 from base import keybs
 from handlers import (
-	start,
-	help_h,
-	to_main,
-	to_do_h,
+    start,
+    help_h,
+    to_main,
+    to_do_h,
 )
 from wallets import (
-	wallets_h,
-	getwallet,
-	addwallet_ch,
-	delwallet,
-	balances_h,
+    wallets_h,
+    getwallet,
+    addwallet_ch,
+    delwallet,
+    balances_h,
 )
 
+from transactions import transc_h
 
 #
 command_handlers = {
@@ -33,8 +34,8 @@ button_handlers = {
     # 'show help': help_h,
     keybs['to_main'][0][0]: wallets_h,
     keybs['to_main'][0][1]: balances_h,
-    keybs['to_main'][1][0]: to_do_h,
-    keybs['to_main'][1][1]: to_do_h,
+    keybs['to_main'][1][0]: transc_h,
+    keybs['to_main'][1][1]: help_h,
 
     keybs['back']: to_main
 }

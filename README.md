@@ -2,6 +2,12 @@
 
 [![dev](https://img.shields.io/badge/Developer-Alexander%20Macheck-yellow)](https://t.me/youbrain)
 
+
+This bot will track all transactions from your Ethereum wallet and notify you immediately!
+Available blockchains: Ethereum, Tron
+Available tokens: USDT, USDC
+
+
 ## Instalation
     git clone https://github.com/youbrain/PTB-template
     cd PTB-template

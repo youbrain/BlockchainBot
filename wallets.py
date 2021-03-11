@@ -3,16 +3,12 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup
 from telegram import ext
 
-import ethscanio
 from database import Wallet, Transaction, Token
-from base import new_response, txts, keybs, del_msg
+from base import new_response, keybs, del_msg
 
 
 @new_response
 def wallets_h(update, context, data, user, text, btns):
-    # context.user_data['to_del'] = update.message.message_id
-    # del_msg(update, context)
-
     keyb = []
     for wlt in Wallet.select().where(Wallet.owner_id == user.chat_id):
         btn_name = wlt.name if wlt.name else wlt.address[:20]
@@ -28,11 +24,7 @@ def wallets_h(update, context, data, user, text, btns):
             InlineKeyboardButton(
                 text=btns,
                 callback_data='addwallet'
-            ),
-            # InlineKeyboardButton(
-            #     text=keybs['back'],
-            #     callback_data='backtomain'
-            # ),
+            )
         ]
     )
 
@@ -42,12 +34,25 @@ def wallets_h(update, context, data, user, text, btns):
         )
         return -1
 
-    # remove_keyboard(update, context)
     context.bot.send_message(
         update._effective_chat.id,
         text,
         reply_markup=InlineKeyboardMarkup(keyb)
     )
+    return -1
+
+
+@new_response
+def m_keyband_wall(update, context, data, user, text, btns):
+
+    context.bot.send_message(
+        update._effective_chat.id, '_',
+        reply_markup=ReplyKeyboardMarkup(
+            keybs['to_main'],
+            resize_keyboard=True
+        )
+    )
+    wallets_h(update, context)
     return -1
 
 
@@ -60,14 +65,12 @@ def getwallet(update, context, data, user, text, btns):
 
     text = text.format(wlt.name, wlt.address)
     update.callback_query.edit_message_text(text)
-    # , reply_markup=InlineKeyboardMarkup(keyb)
 
 
 @new_response
 def delwallet(update, context, data, user, text, btns):
     Wallet.get(Wallet.id == data[1]).delete_instance()
     wallets_h(update, context)
-    # wlt.del
 
 # addwallet_ch
 
@@ -101,7 +104,7 @@ def addwallet_name(update, context, data, user, text, btns):
 
 @new_response
 def addwallet_save(update, context, data, user, text, btns):
-    if update.message.text == keybs['addwallet_name'][0][0]:
+    if update.message.text == keybs['addwallet_name'][0][1]:
         name = None
     else:
         name = update.message.text
@@ -123,6 +126,14 @@ def addwallet_save(update, context, data, user, text, btns):
         wallet_id=wlt.id
     ).save()
 
+    context.bot.send_message(
+        update._effective_chat.id, '_',
+        reply_markup=ReplyKeyboardMarkup(
+            keybs['to_main'],
+            resize_keyboard=True
+        )
+    )
+
     wallets_h(update, context)
 
     return -1
@@ -135,7 +146,7 @@ addwallet_ch = ext.ConversationHandler(
         0: [
             ext.MessageHandler(
                 ext.Filters.regex(f"^({keybs['back']})$"),
-                wallets_h
+                m_keyband_wall
             ),
             ext.MessageHandler(ext.Filters.text, addwallet_name)
         ],
@@ -143,7 +154,7 @@ addwallet_ch = ext.ConversationHandler(
         1: [
             ext.MessageHandler(
                 ext.Filters.regex(f"^({keybs['back']})$"),
-                wallets_h
+                m_keyband_wall
             ),
             ext.MessageHandler(ext.Filters.text, addwallet_save)
         ],
@@ -156,54 +167,37 @@ addwallet_ch = ext.ConversationHandler(
 @new_response
 def balances_h(update, context, data, user, text, btns):
     wallets = Wallet.select().where(Wallet.owner_id == user.chat_id)
-    # adrsses = [wlt.address for wlt in wallets]
 
     text = ''
-    total = 0.0
+    total_usdt = 0.0
+    total_usdc = 0.0
 
     for wlt in wallets:
-        now_balance_usdt = ethscanio.get_eth_balance(
-            wlt.address,
-            token='USDT'
-        )
+        text += '<b>' + (wlt.name if wlt.name else wlt.address) + '</b>'
+
         usdt_token = Token.get(
             (Token.name == 'USDT') & (Token.wallet_id == wlt.id)
         )
-        if wlt.address.startswith('0x'):
-            text += f"<a href='https://etherscan.io/address/{wlt.address}'>{wlt.name if wlt.name else wlt.address}</a>\n"
+        usdc_token = Token.get(
+            (Token.name == 'USDC') & (Token.wallet_id == wlt.id)
+        )
 
-            now_balance_usdc = ethscanio.get_eth_balance(
-                wlt.address,
-                token='USDC'
-            )
-            usdc_token = Token.get(
-                (Token.name == 'USDC') & (Token.wallet_id == wlt.id)
-            )
+        if usdc_token.amount:
+            text += f"\n<code>{usdc_token.amount} USDC</code>"
+            total_usdc += usdc_token.amount
 
-            if usdc_token.amount != now_balance_usdc:
-                usdc_token.amount = now_balance_usdc
-                usdc_token.save()
+        if usdt_token.amount:
+            text += f"\n<code>{usdt_token.amount} USDT</code>"
+            total_usdt += usdt_token.amount
 
-            if usdt_token.amount != now_balance_usdt:
-                usdt_token.amount = now_balance_usdt
-                usdt_token.save()
+        if not usdc_token.amount and not usdt_token.amount:
+            text += f"\n<code>Error</code>"
 
-            total += now_balance_usdc
-        else:
-            text += f"<a href='https://tronscan.org/#/address/{wlt.address}'>{wlt.name if wlt.name else wlt.address}</a>\n"
+        text += '\n\n'
 
-            now_balance_usdt = ethscanio.get_trc_balance(wlt.address)
-
-            if usdt_token.amount != now_balance_usdt:
-                usdt_token.amount = now_balance_usdt
-                usdt_token.save()
-
-        text += f"<code>{usdc_token.amount}$ USDC</code>\n"
-        text += f"<code>{usdt_token.amount}$ USDT</code>\n\n"
-
-        total += now_balance_usdt
-
-    text += 'TOTAL:  <b>' + str(total) + '</b> $ '
+    total_usdc = "{:,}".format(total_usdc)
+    total_usdc = "{:,}".format(total_usdt)
+    text += f"\nTOTAL:\n{total_usdc} USDC   {total_usdt} USDT"
 
     context.bot.send_message(
         update._effective_chat.id,

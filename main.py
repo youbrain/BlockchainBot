@@ -65,7 +65,7 @@ def main():
             CallbackQueryHandler(handler[1], pattern=handler[0])
         )
 
-    if bool(evars['debug']) is False:
+    if bool(evars['debug']) is True:
         updater.dispatcher.add_error_handler(error_handler)
 
     updater.start_polling()

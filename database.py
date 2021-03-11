@@ -69,7 +69,6 @@ class Transaction(peewee.Model):
     id = peewee.AutoField()
     wallet_id = peewee.IntegerField()
 
-    # direction = peewee.CharField()
     hash = peewee.CharField()
     froom = peewee.CharField()
     to = peewee.CharField()

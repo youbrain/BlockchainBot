@@ -1,24 +1,24 @@
 {
     "texts": {
-        "you_were_banned": "You were banned",
-        "to_main": "main screen",
-        "help_h": "help info",
+        "you_were_banned": "ℹ️ You were banned",
+        "to_main": "Welcome 💸",
+        "help_h": "This bot will track all transactions from your Ethereum wallet and notify you immediately!\n\n<b>Available blockchains:</b> Ethereum, Tron\n<b>Available tokens:</b> USDT, USDC",
         "to_do_h": "😉 Soon...",
-        "wallets_h": "All wallets:",
-        "addwallet_address": "Send address:",
-        "addwallet_name": "Send new wallet name, or skip",
+        "wallets_h": "Tracked Wallets:\n<i>(× - remove wallet from list)</i>",
+        "addwallet_address": "Send the wallet address (erc20 or trc20 only)",
+        "addwallet_name": "Send the <b>name</b> of the wallet or skip this step",
         "getwallet": "<b>Name:</b> {}\n<b>Address:</b> {}\n\n<b>Transactions:</b>\n<code>{}</code>",
         "new_chat_added": "Hello, this bot will send notifications of all transactions on <b>{}'s</b> wallets"
     },
     "keyboards": {
-        "back": "Back",
-        "wallets_h": "add wallet",
+        "back": "⬅️ Back",
+        "wallets_h": "➕ Add wallet",
         "addwallet_name": [
-            ["Skip", "Back"]
+            ["⬅️ Back", "Skip ⏭"]
         ],
         "to_main": [
-            ["Wallets", "Balances"],
-            ["Transaction", "Info"]
+            ["📁 Wallets", "💰 Balances"],
+            ["📑 Transactions", "ℹ️ Info"]
         ]
     }
 }
