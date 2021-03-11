@@ -40,8 +40,35 @@ def get_trc_balance(address):
     return 0
 
 
+def get_last_txn_eth(address):
+    url = 'https://api.etherscan.io/api?module=account&action=tokentx'
+    url += '&address=' + address
+    url += '&sort=desc&apikey=' + evars['ethscanio_api_key']
+
+    resp = get(url)
+
+    jsn = json.loads(resp.text)
+    res = jsn['result'][0]
+    return res
+
+
+def get_last_txn_trc(address):
+    url = 'https://api.trongrid.io/v1/accounts/' + address + '/transactions/trc20'
+    pars = {"only_confirmed": "true", "limit": "1"}
+
+    resp = get(url, params=pars)
+    txns = json.loads(resp.text)['data']
+
+    if txns:
+        res = txns[0]
+        return res
+    return
+
+
 if __name__ == '__main__':
-    # '''
+    print(get_last_txn_eth('0xA9D04FFBB17FFA06F3F0B32FB04290E0933CA22A'))
+    '''
+    print(get_last_txn_trc('TJU8iiNLFnCEFU7GBLDiMPRgqdhGgV6Ubj'))
     print(
         get_eth_balance(
             '0x5b6ca60084b57cd0b0aad9dfd9e4028038768a03',
@@ -50,5 +77,5 @@ if __name__ == '__main__':
             # '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'  # usdc
         )
     )
-    # '''
-    # print(get_trc_balance('TXapQNRb5ZAssLsVDgDTBGEC8XNQPbXMaA'))
+    print(get_trc_balance('TXapQNRb5ZAssLsVDgDTBGEC8XNQPbXMaA'))
+    '''

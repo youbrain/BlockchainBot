@@ -69,8 +69,13 @@ class Transaction(peewee.Model):
     id = peewee.AutoField()
     wallet_id = peewee.IntegerField()
 
+    # direction = peewee.CharField()
     hash = peewee.CharField()
-    amount = peewee.FloatField()
+    froom = peewee.CharField()
+    to = peewee.CharField()
+    amount = peewee.FloatField(default=0.0)
+    token = peewee.CharField()
+    time = peewee.DateTimeField(default=datetime.now())
 
     class Meta:
         database = db
