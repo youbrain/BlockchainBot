@@ -195,9 +195,16 @@ def balances_h(update, context, data, user, text, btns):
 
         text += '\n\n'
 
-    total_usdc = "{:,}".format(total_usdc)
-    total_usdc = "{:,}".format(total_usdt)
-    text += f"\nTOTAL:\n{total_usdc} USDC   {total_usdt} USDT"
+    total_usdc_f = "{:,}".format(int(total_usdc))
+    total_usdt_f = "{:,}".format(int(total_usdt))
+
+    text += '\nTOTAL:\n'
+
+    if total_usdc:
+        text += total_usdc_f + ' USDC'
+
+    if total_usdt:
+        text += total_usdt_f + ' USDT'
 
     context.bot.send_message(
         update._effective_chat.id,

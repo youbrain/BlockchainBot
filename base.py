@@ -6,7 +6,7 @@ from os import environ as evars
 from os.path import (abspath, basename, dirname)
 import requests
 import traceback
-import etherscan
+#import etherscan
 from telegram import ReplyKeyboardRemove
 
 from database import User

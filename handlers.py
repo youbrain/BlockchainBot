@@ -99,19 +99,22 @@ def notify(context, dest, txn, wlt, token='ETH'):
     chat_ids = list(set(dest.chat_ids.split(',')))
 
     for chat_id in chat_ids:
-        try:
-            context.bot.send_message(
-                chat_id,
-                txt
-            )
-            sleep(5)
-        except Exception as e:
-            print(e, 'error waiting 60sec...')
-            sleep(60)
+        sent = False
+        while not sent:
+            try:
+                context.bot.send_message(
+                    chat_id,
+                    txt
+                )
+                sleep(5)
+                sent = True
+            except Exception as e:
+                print(e, 'error waiting 60sec...')
+                sleep(60)
 
 
 def tnx_notifyer(context):
-    return
+    # return
     while True:
         for dest in Destination.select():
             wlts = Wallet.select().where(Wallet.owner_id == dest.user_id)

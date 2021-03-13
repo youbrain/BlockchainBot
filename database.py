@@ -16,9 +16,12 @@ db = peewee.PostgresqlDatabase(
     autorollback=True
 )
 '''
-
+db = peewee.MySQLDatabase('blockchainbot', user='root', password=evars['mysql_pswd'],
+                          host='127.0.0.1', port=3306)
+'''
 db_file = 'development.db' if bool(evars['debug']) else 'production.db'
 db = peewee.SqliteDatabase(db_file)
+'''
 
 
 class User(peewee.Model):
