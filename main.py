@@ -68,7 +68,11 @@ def main():
     if bool(evars['debug']) is True:
         updater.dispatcher.add_error_handler(error_handler)
 
-    updater.start_polling()
+    while True:
+        try:
+            updater.start_polling()
+        except:
+            pass
     updater.idle()
 
 

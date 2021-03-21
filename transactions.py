@@ -13,7 +13,7 @@ def transc_h(update, context, data, user, text, btns):
     wlts = [wlt.id for wlt in wlts]
 
     txns = Transaction.select().where(
-        (Transaction.wallet_id << wlts) & (Transaction.time < a3days_ago)
+        (Transaction.wallet_id << wlts) & (Transaction.time > a3days_ago)
     ).order_by(Transaction.time)
 
     txt = '<code>'
@@ -22,7 +22,7 @@ def transc_h(update, context, data, user, text, btns):
         wlt = Wallet.get(Wallet.id == txn.wallet_id)
 
         time = txn.time.strftime('%d.%m.%Y %H:%M')
-        in_out = '+' if txn.to == wlt.address else '-'
+        in_out = '+' if txn.to.lower() == wlt.address.lower() else '-'
 
         txt += f"{in_out} {txn.amount} {txn.token} {time}\n"
 

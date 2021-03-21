@@ -1,1 +1,22 @@
-NoneType: None
+Traceback (most recent call last):
+  File "/root/BlockchainBot/env/lib/python3.8/site-packages/telegram/ext/dispatcher.py", line 442, in process_update
+    handler.handle_update(update, self, check, context)
+  File "/root/BlockchainBot/env/lib/python3.8/site-packages/telegram/ext/handler.py", line 160, in handle_update
+    return self.callback(update, context)
+  File "/root/BlockchainBot/base.py", line 43, in wrapper
+    return_values = func(*args, data, user, text, keyb, **kwargs)
+  File "/root/BlockchainBot/transactions.py", line 31, in transc_h
+    context.bot.send_message(user.chat_id, txt)
+  File "/root/BlockchainBot/env/lib/python3.8/site-packages/telegram/bot.py", line 126, in decorator
+    result = func(*args, **kwargs)
+  File "/root/BlockchainBot/env/lib/python3.8/site-packages/telegram/bot.py", line 474, in send_message
+    return self._message(  # type: ignore[return-value]
+  File "/root/BlockchainBot/env/lib/python3.8/site-packages/telegram/bot.py", line 295, in _message
+    result = self._post(endpoint, data, timeout=timeout, api_kwargs=api_kwargs)
+  File "/root/BlockchainBot/env/lib/python3.8/site-packages/telegram/bot.py", line 258, in _post
+    return self.request.post(
+  File "/root/BlockchainBot/env/lib/python3.8/site-packages/telegram/utils/request.py", line 349, in post
+    result = self._request_wrapper(
+  File "/root/BlockchainBot/env/lib/python3.8/site-packages/telegram/utils/request.py", line 272, in _request_wrapper
+    raise BadRequest(message)
+telegram.error.BadRequest: Message must be non-empty

@@ -1,4 +1,8 @@
+*.save.*
 env
 __pycache__
 *.db
 dev.txt
+BlockchainBot.txt
+*.log
+*.save

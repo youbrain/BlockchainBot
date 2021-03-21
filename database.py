@@ -5,20 +5,19 @@ from datetime import datetime
 from os import environ as evars
 
 
-'''
 db = peewee.PostgresqlDatabase(
-    'db_name',
-    user='',
-    password='',
-    host='',
+    'cryptobot',
+    user='cryptobot',
+    password='crypto123rgrgF@',
+    host='localhost',
     port=5432,
     autocommit=True,
     autorollback=True
 )
 '''
-db = peewee.MySQLDatabase('blockchainbot', user='root', password=evars['mysql_pswd'],
+db = peewee.MySQLDatabase('blockchainbot', user='bot', password=evars['mysql_pswd'],
                           host='127.0.0.1', port=3306)
-'''
+
 db_file = 'development.db' if bool(evars['debug']) else 'production.db'
 db = peewee.SqliteDatabase(db_file)
 '''

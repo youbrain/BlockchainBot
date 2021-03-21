@@ -66,7 +66,8 @@ def get_last_txn_trc(address):
 
 
 if __name__ == '__main__':
-    print(get_last_txn_eth('0xA9D04FFBB17FFA06F3F0B32FB04290E0933CA22A'))
+    print(get_last_txn_trc('TJU8iiNLFnCEFU7GBLDiMPRgqdhGgV6Ubj'))
+    #print(get_last_txn_eth('0xA9D04FFBB17FFA06F3F0B32FB04290E0933CA22A'))
     '''
     print(get_last_txn_trc('TJU8iiNLFnCEFU7GBLDiMPRgqdhGgV6Ubj'))
     print(
