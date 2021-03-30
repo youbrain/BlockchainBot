@@ -7,5 +7,5 @@ export mysql_pswd=crypto123rgrgF@
 
 cd /root/BlockchainBot
 source env/bin/activate
-sleep 20
+sleep 10
 python3 main.py #& disown

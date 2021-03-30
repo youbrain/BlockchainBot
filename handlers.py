@@ -3,6 +3,7 @@
 # -*- coding: utf-8 -*-
 from telegram import ReplyKeyboardMarkup
 from time import sleep
+from threading import Thread
 from datetime import datetime
 
 import ethscanio
@@ -101,102 +102,94 @@ def notify(context, dest, txn, wlt, token='ETH'):
     chat_ids = list(set(dest.chat_ids.split(',')))
 
     for chat_id in chat_ids:
-        sent = False
-        while not sent:
+        sent = 0
+        while sent < 5:
             try:
                 context.bot.send_message(
                     chat_id,
                     txt
                 )
-                sleep(5)
-                sent = True
+                sent = 5
             except Exception as e:
                 print(e, 'error waiting 60sec...')
                 sleep(60)
+                sent += 1
+        sleep(1)
 
 
 def tnx_notifyer(context):
-    print(1)
     # return
     while True:
         for dest in Destination.select():
-            print(2)
             wlts = Wallet.select().where(Wallet.owner_id == dest.user_id)
-
             for wlt in wlts:
                 prob_last_txn = Transaction.select().where(
                     Transaction.wallet_id == wlt.id
                 ).order_by(Transaction.id.desc())
-                print(3)
                 prob_last_hash = False
                 if prob_last_txn:
                     prob_last_hash = prob_last_txn.get().hash
 
-                try:
-                    if wlt.address.startswith('0x'):
-                        last_txn = ethscanio.get_last_txn_eth(wlt.address)
-                        #print(5)
-                        if prob_last_hash != last_txn['hash']:
-                            #print(6)
-                            amount = float(
-                                last_txn['value'][:-6] + '.' +
-                                last_txn['value'][-6:-5]
-                            )
-                            txn = Transaction(
-                                wallet_id=wlt.id,
-                                hash=last_txn['hash'],
-                                froom=last_txn['from'].lower(),
-                                to=last_txn['to'].lower(),
-                                amount=amount,
-                                token=last_txn['tokenSymbol'],
-                                time=datetime.fromtimestamp(
-                                    int(last_txn['timeStamp']))
-                            )
-                            txn.save()
+                # try:
+                if wlt.address.startswith('0x'):
+                    last_txn = ethscanio.get_last_txn_eth(wlt.address)
+                    if prob_last_hash != last_txn['hash']:
+                        amount = float(
+                            last_txn['value'][:-6] + '.' +
+                            last_txn['value'][-6:-5]
+                        )
+                        txn = Transaction(
+                            wallet_id=wlt.id,
+                            hash=last_txn['hash'],
+                            froom=last_txn['from'].lower(),
+                            to=last_txn['to'].lower(),
+                            amount=amount,
+                            token=last_txn['tokenSymbol'],
+                            time=datetime.fromtimestamp(
+                                int(last_txn['timeStamp']))
+                        )
+                        txn.save()
 
-                            token = Token.get(
-                                (Token.wallet_id == wlt.id) & (
-                                    Token.name == txn.token)
-                            )
-                            update_balance(wlt.address, token, is_eth=True)
+                        token = Token.get(
+                            (Token.wallet_id == wlt.id) & (
+                                Token.name == txn.token)
+                        )
+                        Thread(target=update_balance, args=(
+                            wlt.address, token), kwargs={'is_eth': True}).start()
 
-                            notify(context, dest, txn, wlt)
-                    else:
-                        last_txn = ethscanio.get_last_txn_trc(wlt.address)
-                        print(5)
-                        if prob_last_hash != last_txn['transaction_id']:
-                            amount = float(
-                                last_txn['value'][:-6] + '.' +
-                                last_txn['value'][-6:-5]
-                            )
-                            txn = Transaction(
-                                wallet_id=wlt.id,
-                                hash=last_txn['transaction_id'],
-                                froom=last_txn['from'].lower(),
-                                to=last_txn['to'].lower(),
-                                amount=amount,
-                                token=last_txn['token_info']['symbol'],
-                                time=datetime.fromtimestamp(
-                                    int((str(last_txn['block_timestamp']))[:-3]))
-                            )
-                            txn.save()
+                        Thread(target=notify, args=(
+                            context, dest, txn, wlt)).start()
+                else:
+                    last_txn = ethscanio.get_last_txn_trc(wlt.address)
+                    if prob_last_hash != last_txn['transaction_id']:
+                        amount = float(
+                            last_txn['value'][:-6] + '.' +
+                            last_txn['value'][-6:-5]
+                        )
+                        txn = Transaction(
+                            wallet_id=wlt.id,
+                            hash=last_txn['transaction_id'],
+                            froom=last_txn['from'].lower(),
+                            to=last_txn['to'].lower(),
+                            amount=amount,
+                            token=last_txn['token_info']['symbol'],
+                            time=datetime.fromtimestamp(
+                                int((str(last_txn['block_timestamp']))[:-3]))
+                        )
+                        txn.save()
 
-                            token = Token.get(
-                                (Token.wallet_id == wlt.id) & (
-                                    Token.name == txn.token)
-                            )
-                            update_balance(wlt.address, token, is_eth=False)
+                        token = Token.get(
+                            (Token.wallet_id == wlt.id) & (
+                                Token.name == txn.token)
+                        )
+                        Thread(target=update_balance,
+                               args=(wlt.address, token), kwargs={'is_eth': False}).start()
 
-                            notify(context, dest, txn, wlt)
-                except:
-                    pass
-            sleep(20)
-        sleep(5)
+                        Thread(target=notify, args=(
+                            context, dest, txn, wlt)).start()
+                # except Exception as e:
+                #     print(e)
+            sleep(5)
 
-'''
+
 #tnx_notifyer(1)
-wlt = Wallet.get(Wallet.id == 5)
-txn = Transaction.get(Transaction.id == 13)
-in_out = '+' if txn.to == wlt.address else '-'
-print(in_out, txn.to, wlt.address)
-'''

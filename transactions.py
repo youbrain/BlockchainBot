@@ -18,11 +18,21 @@ def transc_h(update, context, data, user, text, btns):
 
     txt = '<code>'
 
+    pst = 55
+
     for txn in txns:
         wlt = Wallet.get(Wallet.id == txn.wallet_id)
 
         time = txn.time.strftime('%d.%m.%Y %H:%M')
         in_out = '+' if txn.to.lower() == wlt.address.lower() else '-'
+
+        nw = txn.time.strftime('%d')
+        if pst == 55:
+            pst = nw
+        elif pst != nw:
+            txt += '\n'
+
+        pst = nw
 
         txt += f"{in_out} {txn.amount} {txn.token} {time}\n"
 
